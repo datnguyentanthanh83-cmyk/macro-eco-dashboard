@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Macro Markets Dashboard · Dat</title>
+<style>
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:#0f172a;background:#f4f7fb;--ink:#0f172a;--muted:#3f4c63;--soft:#5b667a;--line:#e6eaf0;--card:#fff;--green:#087443;--green-bg:#e9f8ef;--red:#c73545;--red-bg:#fff0f1;--blue:#275bc5;--blue-bg:#eef4ff;--amber:#a15c00;--amber-bg:#fff7e6;--shadow:0 10px 28px rgba(25,42,70,.07);--radius:16px}
+*{box-sizing:border-box;margin:0;padding:0}body{background:linear-gradient(180deg,#f8fafc 0,#f3f6fa 100%);padding:28px 32px 42px;line-height:1.4}.shell{max-width:1320px;margin:auto}
+.header{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:22px}.brand{display:flex;align-items:center;gap:13px}.logo{display:grid;place-items:center;width:45px;height:45px;border-radius:13px;background:#1f5cc9;color:#fff;font-weight:800;box-shadow:0 7px 15px rgba(39,91,197,.22)}
+h1{font-size:1.48rem;letter-spacing:-.03em;color:#0b1220;font-weight:800}.brand p{font-size:.86rem;color:#3f4c63;margin-top:3px;font-weight:600}
+.meta{display:flex;gap:8px;flex-wrap:wrap}.pill{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:999px;background:#fff;padding:7px 12px;color:#334155;font-size:.76rem;font-weight:700}.dot{width:7px;height:7px;border-radius:50%;background:#12a150;box-shadow:0 0 0 4px #e5f7ec}
+.hero{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.kpi,.card,.side,.panel,.comment{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.kpi{padding:16px 17px;position:relative;overflow:hidden}.kpi:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:#4c7ee8}
+.eyebrow{font-size:.7rem;letter-spacing:.07em;text-transform:uppercase;font-weight:800;color:#334155}
+.kpi .value{font-size:1.48rem;font-weight:850;letter-spacing:-.04em;margin:8px 0 3px;color:#0b1220}
+.kpi .sub{font-size:.76rem;color:#334155;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.card{padding:17px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.cat{display:flex;align-items:center;gap:10px}.icon{display:grid;place-items:center;width:35px;height:35px;border-radius:11px;background:var(--blue-bg);border:1px solid #d9e5ff;font-size:1rem}
+.cat h3{font-size:.94rem;color:#0b1220;letter-spacing:-.01em;font-weight:800}.cat span{display:block;color:#475569;font-size:.71rem;margin-top:2px;font-weight:650}
+.tag{white-space:nowrap;border-radius:999px;padding:5px 9px;font-size:.7rem;font-weight:800;background:var(--blue-bg);color:var(--blue)}
+.tag.green{background:var(--green-bg);color:var(--green)}.tag.red{background:var(--red-bg);color:var(--red)}.tag.amber{background:var(--amber-bg);color:var(--amber)}
+.level{font-size:1.32rem;font-weight:850;letter-spacing:-.035em;color:#0b1220}.level small{font-size:.7rem;font-weight:700;color:#475569;margin-left:6px;letter-spacing:0}
+.table{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.thead,.tr{display:grid;grid-template-columns:minmax(0,1fr) 74px 74px;gap:6px;align-items:center}
+.thead{background:#f1f5f9;color:#475569;font-size:.63rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:7px 10px}
+.thead span:not(:first-child),.tr span:not(:first-child){text-align:right}
+.tr{padding:8px 10px;border-top:1px solid #eef1f5;font-size:.77rem;min-height:35px}
+.tr .name{color:#334155;font-weight:650;overflow:hidden;text-overflow:ellipsis}
+.tr .val{font-weight:750;color:#172033;font-variant-numeric:tabular-nums}
+.change{font-weight:800;font-variant-numeric:tabular-nums}.up{color:var(--green)!important}.down{color:var(--red)!important}.flat{color:#7a8699!important}.dash{color:#64748b;font-weight:700}
+.note{font-size:.7rem;color:#475569;font-weight:600;margin-top:-5px}
+.news{border-top:1px solid var(--line);padding-top:11px;margin-top:auto}
+.news-label{font-size:.65rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#1d4ed8;margin-bottom:5px}
+.news p{font-size:.8rem;color:#1e293b;font-weight:600;line-height:1.5}
+.comment{margin-top:14px;padding:22px 24px;background:linear-gradient(135deg,#fff,#f7fbff);border:1px solid #dbe4f0}
+.comment .badge{display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:#eef4ff;color:#1d4ed8;font-size:.7rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;margin-bottom:12px}
+.comment h2{font-size:1.05rem;font-weight:800;color:#0b1220;letter-spacing:-.02em;margin-bottom:10px}
+.comment p{font-size:.88rem;color:#1e293b;font-weight:600;line-height:1.68;margin-bottom:12px}.comment p:last-child{margin-bottom:0}.comment strong{color:#0b1220;font-weight:800}
+.spotlight{display:grid;grid-template-columns:1.35fr 1fr;gap:14px;margin-top:14px}
+.panel{padding:19px 21px;background:linear-gradient(135deg,#eef5ff,#fff)}
+.panel h2,.side h2{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:#275bc5;margin-bottom:11px}
+.panel ul{list-style:none;display:flex;flex-direction:column;gap:9px}
+.panel li{font-size:.86rem;color:#0f172a;font-weight:650;display:flex;gap:9px}
+.panel li:before{content:"";width:6px;height:6px;flex:0 0 6px;border-radius:50%;background:#f0a62b;margin-top:7px}
+.side{padding:19px 21px}.side h2{color:#667085}
+.cal{display:flex;flex-direction:column;gap:8px}
+.cal-item{display:flex;gap:12px;padding:9px 11px;background:#fafbfc;border:1px solid var(--line);border-radius:10px;font-size:.77rem}
+.when{color:#1d4ed8;font-weight:800;min-width:58px}.what{color:#0f172a;font-weight:650}
+.legend{margin-top:17px;display:flex;align-items:center;gap:13px;flex-wrap:wrap;color:#475569;font-size:.72rem;font-weight:600}
+.legend b{font-size:.7rem;color:#334155}.legend span{display:inline-flex;align-items:center;gap:5px}.legend i{display:inline-block;width:8px;height:8px;border-radius:50%}
+.footer{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:17px;color:#64748b;font-size:.7rem;font-weight:600}.source{color:#475569}
+.err{padding:24px;border:1px solid #fecaca;background:#fff1f2;border-radius:16px;color:#9f1239;font-weight:700}
+@media(max-width:1100px){.hero,.grid{grid-template-columns:repeat(2,1fr)}.spotlight{grid-template-columns:1fr}}
+@media(max-width:700px){body{padding:16px}.hero,.grid{grid-template-columns:1fr}.header{align-items:flex-start}.thead,.tr{grid-template-columns:minmax(0,1fr) 64px 64px}}
+</style>
+</head>
+<body>
+<div class="shell" id="app"><div class="err">Đang tải dữ liệu… cần cả <code>index.html</code> và <code>data.js</code> trong cùng thư mục.</div></div>
+<script src="./data.js"></script>
+<script>
+(function () {
+  var d = window.MACRO_DATA;
+  var app = document.getElementById('app');
+  if (!d) {
+    app.innerHTML = '<div class="err">Không đọc được data.js. Hãy để <b>index.html</b> và <b>data.js</b> cùng một thư mục, rồi mở bằng Chrome/Safari.</div>';
+    return;
+  }
+  function esc(s){return String(s==null?'':s)}
+  function cell(v, cls){
+    if (v === '—' || v == null || v === '') return '<span class="dash">—</span>';
+    if (cls === 'val') return '<span class="val">'+esc(v)+'</span>';
+    var c = cls ? ('change '+cls) : 'change';
+    if (cls === 'up' || cls === 'down' || cls === 'flat') return '<span class="'+c+'">'+esc(v)+'</span>';
+    return '<span class="'+c+'">'+esc(v)+'</span>';
+  }
+  var m = d.meta;
+  var html = '';
+  html += '<header class="header"><div class="brand"><div class="logo">ME</div><div><h1>'+esc(m.title)+'</h1><p>'+esc(m.subtitle)+'</p></div></div><div class="meta"><div class="pill"><i class="dot"></i>'+esc(m.status)+'</div><div class="pill">'+esc(m.dateLabel)+'</div><div class="pill">'+esc(m.asOf)+'</div></div></header>';
+  html += '<section class="hero">'+(d.kpis||[]).map(function(k){
+    return '<div class="kpi"><div class="eyebrow">'+esc(k.label)+'</div><div class="value">'+esc(k.value)+'</div><div class="sub">'+(k.subHtml||esc(k.sub||''))+'</div></div>';
+  }).join('')+'</section>';
+  html += '<section class="grid">'+(d.cards||[]).map(function(c){
+    var tag = '<span class="tag'+(c.tagClass?(' '+c.tagClass):'')+'">'+esc(c.tag)+'</span>';
+    var level = '<div class="level">'+esc(c.level)+(c.levelSmall?'<small>'+esc(c.levelSmall)+'</small>':'')+'</div>';
+    var cols = c.cols||['Chỉ số','% ngày','% tuần'];
+    var thead = '<div class="thead"><span>'+esc(cols[0])+'</span><span>'+esc(cols[1])+'</span><span>'+esc(cols[2])+'</span></div>';
+    var rows = (c.rows||[]).map(function(r){
+      return '<div class="tr"><span class="name">'+esc(r.name)+'</span>'+cell(r.day,r.dayClass||'')+cell(r.week,r.weekClass||'')+'</div>';
+    }).join('');
+    return '<article class="card"><div class="card-top"><div class="cat"><div class="icon">'+esc(c.icon)+'</div><div><h3>'+esc(c.title)+'</h3><span>'+esc(c.subtitle)+'</span></div></div>'+tag+'</div>'+level+'<div class="table">'+thead+rows+'</div><div class="note">'+esc(c.note)+'</div><div class="news"><div class="news-label">Điểm nhấn</div><p>'+esc(c.news)+'</p></div></article>';
+  }).join('')+'</section>';
+  var cm = d.comment||{};
+  html += '<section class="comment"><div class="badge">'+esc(cm.badge||'Macro Eco · Bình luận')+'</div><h2>'+esc(cm.title||'Nhận định chung tình hình')+'</h2>'+(cm.paragraphs||[]).map(function(p){return '<p>'+p+'</p>';}).join('')+'</section>';
+  html += '<section class="spotlight"><div class="panel"><h2>Bottom line hôm nay</h2><ul>'+(d.bottomLine||[]).map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul></div><div class="side"><h2>Lịch catalyst</h2><div class="cal">'+(d.catalysts||[]).map(function(x){return '<div class="cal-item"><span class="when">'+esc(x.when)+'</span><span class="what">'+esc(x.what)+'</span></div>';}).join('')+'</div></div></section>';
+  html += '<div class="legend"><b>Quy ước:</b><span><i style="background:#087443"></i> tăng</span><span><i style="background:#c73545"></i> giảm</span><span><i style="background:#a7b0bd"></i> chưa có dữ liệu = —</span><span>Chỉ đổi data.js mỗi ngày</span></div>';
+  var f = d.footer||{};
+  html += '<footer class="footer"><span>'+esc(f.left||'')+'</span><span class="source">'+esc(f.source||'')+'</span></footer>';
+  app.innerHTML = html;
+  document.title = (m.title||'Macro Markets') + ' · ' + (m.dateLabel||'');
+})();
+</script>
+</body>
+</html>
