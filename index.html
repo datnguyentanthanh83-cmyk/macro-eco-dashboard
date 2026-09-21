@@ -118,11 +118,6 @@ h1{font-size:1.48rem;letter-spacing:-.03em;color:#262626;font-weight:800}.brand 
   var m = d.meta;
   var html = '';
   html += '<header class="header"><div class="brand"><div class="logo">ME</div><div><h1>'+esc(m.title)+'</h1><p>'+esc(m.subtitle)+'</p></div></div><div class="meta"><div class="pill"><i class="dot"></i>'+esc(m.status)+'</div><div class="pill">'+esc(m.dateLabel)+'</div><div class="pill">'+esc(m.asOf)+'</div></div></header>';
-  var liveMap={ 'DXY':'dxy', 'UST 10Y':'ust10y', 'VN-Index':'vnindex' };
-  html += '<section class="hero">'+(d.kpis||[]).map(function(k){
-    var lk=liveMap[k.label]||'';
-    return '<div class="kpi"'+(lk?(' data-live="'+lk+'"'):'')+'><div class="eyebrow">'+esc(k.label)+'</div><div class="value">'+esc(k.value)+'</div><div class="sub">'+(k.subHtml||esc(k.sub||''))+'</div></div>';
-  }).join('')+'</section>';
   html += '<section class="live-board" id="live-board"><div class="live-head"><h2>Near real-time · delayed</h2><div class="live-status" id="live-status">Chờ quote…</div></div><div class="live-grid">'
     +'<div class="live-item" id="live-dxy"><div class="k">DXY</div><div class="live-value">—</div><div class="live-chg"></div></div>'
     +'<div class="live-item" id="live-ust10y"><div class="k">UST 10Y</div><div class="live-value">—</div><div class="live-chg"></div></div>'
@@ -132,6 +127,21 @@ h1{font-size:1.48rem;letter-spacing:-.03em;color:#262626;font-weight:800}.brand 
     +'<div class="live-item" id="live-eurusd"><div class="k">EUR/USD</div><div class="live-value">—</div><div class="live-chg">FX mid</div></div>'
     +'<div class="live-item" id="live-usdjpy"><div class="k">USD/JPY</div><div class="live-value">—</div><div class="live-chg">FX mid</div></div>'
     +'</div></section>';
+  html += '<div class="section-label">Bảng chỉ số chi tiết</div>';
+  html += '<section class="grid">'+(d.cards||[]).map(function(c){
+    var tag = '<span class="tag'+(c.tagClass?(' '+c.tagClass):'')+'">'+esc(c.tag)+'</span>';
+    var level = '<div class="level">'+esc(c.level)+(c.levelSmall?'<small>'+esc(c.levelSmall)+'</small>':'')+'</div>';
+    var cols = c.cols||['Chỉ số','% ngày','% tuần'];
+    var thead = '<div class="thead"><span>'+esc(cols[0])+'</span><span>'+esc(cols[1])+'</span><span>'+esc(cols[2])+'</span></div>';
+    var rows = (c.rows||[]).map(function(r){
+      var fxAttr='';
+      if (/EUR\/USD/i.test(r.name)) fxAttr=' data-live-fx="eurusd"';
+      if (/USD\/JPY/i.test(r.name)) fxAttr=' data-live-fx="usdjpy"';
+      if (/USD\/VND|VCB|SBV USD/i.test(r.name)) fxAttr=' data-live-fx="usdvnd"';
+      return '<div class="tr"'+fxAttr+'><span class="name">'+esc(r.name)+'</span>'+cell(r.day,r.dayClass||'')+cell(r.week,r.weekClass||'')+'</div>';
+    }).join('');
+    return '<article class="card"><div class="card-top"><div class="cat"><div class="icon">'+esc(c.icon)+'</div><div><h3>'+esc(c.title)+'</h3><span>'+esc(c.subtitle)+'</span></div></div>'+tag+'</div>'+level+'<div class="table">'+thead+rows+'</div><div class="note">'+esc(c.note)+'</div><div class="news"><div class="news-label">Điểm nhấn</div><p>'+esc(c.news)+'</p></div></article>';
+  }).join('')+'</section>';
   html += '<div class="section-label">Tin địa chính trị · 24h</div>';
   var geo = d.geoNews || {};
   html += '<section class="geo-feed"><div class="geo-feed-head"><h2>'+esc(geo.title||'Geo Pulse · Tin quan trọng')+'</h2><div class="sub">'+esc(geo.window||'24h gần nhất')+'</div></div>';
@@ -151,21 +161,6 @@ h1{font-size:1.48rem;letter-spacing:-.03em;color:#262626;font-weight:800}.brand 
   html += '<div class="section-label">Nhận định · đánh giá · dự đoán</div>';
   html += '<section class="analysis"><div class="badge">'+esc(cm.badge||'Macro Eco · Bình luận')+'</div><h2>'+esc(cm.title||'Nhận định chung tình hình')+'</h2>'+(cm.paragraphs||[]).map(function(p){return '<p>'+p+'</p>';}).join('')+'</section>';
 
-  html += '<div class="section-label">Bảng chỉ số chi tiết</div>';
-  html += '<section class="grid">'+(d.cards||[]).map(function(c){
-    var tag = '<span class="tag'+(c.tagClass?(' '+c.tagClass):'')+'">'+esc(c.tag)+'</span>';
-    var level = '<div class="level">'+esc(c.level)+(c.levelSmall?'<small>'+esc(c.levelSmall)+'</small>':'')+'</div>';
-    var cols = c.cols||['Chỉ số','% ngày','% tuần'];
-    var thead = '<div class="thead"><span>'+esc(cols[0])+'</span><span>'+esc(cols[1])+'</span><span>'+esc(cols[2])+'</span></div>';
-    var rows = (c.rows||[]).map(function(r){
-      var fxAttr='';
-      if (/EUR\/USD/i.test(r.name)) fxAttr=' data-live-fx="eurusd"';
-      if (/USD\/JPY/i.test(r.name)) fxAttr=' data-live-fx="usdjpy"';
-      if (/USD\/VND|VCB|SBV USD/i.test(r.name)) fxAttr=' data-live-fx="usdvnd"';
-      return '<div class="tr"'+fxAttr+'><span class="name">'+esc(r.name)+'</span>'+cell(r.day,r.dayClass||'')+cell(r.week,r.weekClass||'')+'</div>';
-    }).join('');
-    return '<article class="card"><div class="card-top"><div class="cat"><div class="icon">'+esc(c.icon)+'</div><div><h3>'+esc(c.title)+'</h3><span>'+esc(c.subtitle)+'</span></div></div>'+tag+'</div>'+level+'<div class="table">'+thead+rows+'</div><div class="note">'+esc(c.note)+'</div><div class="news"><div class="news-label">Điểm nhấn</div><p>'+esc(c.news)+'</p></div></article>';
-  }).join('')+'</section>';
   html += '<section class="spotlight"><div class="panel"><h2>Bottom line hôm nay</h2><ul>'+(d.bottomLine||[]).map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul></div><div class="side"><h2>Lịch catalyst</h2><div class="cal">'+(d.catalysts||[]).map(function(x){return '<div class="cal-item"><span class="when">'+esc(x.when)+'</span><span class="what">'+esc(x.what)+'</span></div>';}).join('')+'</div></div></section>';
   html += '<div class="legend"><b>Quy ước:</b><span><i style="background:#087443"></i> tăng</span><span><i style="background:#c73545"></i> giảm</span><span><i style="background:#a7b0bd"></i> chưa có dữ liệu = —</span><span>Fed: vs kỳ gần nhất · Inflation: MoM/YoY · còn lại: % ngày/% tuần</span></div>';
   var f = d.footer||{};
