@@ -1,0 +1,154 @@
+{
+  "asOf": "2026-09-21 19:57:51 ICT",
+  "asOfUnix": 1789995471,
+  "provider": "Investing.com chart API (delayed) + er-api FX",
+  "quotes": {
+    "dxy": {
+      "price": 99.988,
+      "open": 99.935,
+      "chgPct": 0.05303447240706186,
+      "chgAbs": 0.05299999999999727,
+      "ts": 1789995300000,
+      "source": "investing",
+      "pairId": 8827
+    },
+    "ust10y": {
+      "price": 4.731,
+      "open": 4.756,
+      "chgPct": -0.5256518082422278,
+      "chgAbs": -0.025000000000000355,
+      "ts": 1789994700000,
+      "source": "investing",
+      "pairId": 23701
+    },
+    "ust2y": {
+      "price": 4.971,
+      "open": 5.002,
+      "chgPct": -0.6197520991603298,
+      "chgAbs": -0.030999999999999694,
+      "ts": 1789995300000,
+      "source": "investing",
+      "pairId": 23705
+    },
+    "vnindex": {
+      "price": 1799.67,
+      "open": 1824.78,
+      "chgPct": -1.3760562917173522,
+      "chgAbs": -25.1099999999999,
+      "ts": 1789976700000,
+      "source": "investing",
+      "pairId": 41063
+    },
+    "wti": {
+      "price": 93.49,
+      "open": 96.75,
+      "chgPct": -3.3695090439276534,
+      "chgAbs": -3.260000000000005,
+      "ts": 1789995300000,
+      "source": "investing",
+      "pairId": 8849
+    },
+    "brent": {
+      "price": 101.17,
+      "open": 104.71,
+      "chgPct": -3.380765924935529,
+      "chgAbs": -3.539999999999992,
+      "ts": 1789995300000,
+      "source": "investing",
+      "pairId": 8833
+    },
+    "gold": {
+      "price": 4392.97,
+      "open": 4413.0,
+      "chgPct": -0.4538862451846758,
+      "chgAbs": -20.029999999999745,
+      "ts": 1789995300000,
+      "source": "investing",
+      "pairId": 8830
+    },
+    "spx": {
+      "price": 7650.5,
+      "open": 7639.17,
+      "chgPct": 0.14831454202485253,
+      "chgAbs": 11.329999999999927,
+      "ts": 1789761300000,
+      "source": "investing",
+      "pairId": 166
+    },
+    "ndx": {
+      "price": 26522.55,
+      "open": 26522.09,
+      "chgPct": 0.00173440328420244,
+      "chgAbs": 0.4599999999991269,
+      "ts": 1789761300000,
+      "source": "investing",
+      "pairId": 14958
+    },
+    "dji": {
+      "price": 51682.64,
+      "open": 51826.78,
+      "chgPct": -0.2781187640829691,
+      "chgAbs": -144.13999999999942,
+      "ts": 1789762800000,
+      "source": "investing",
+      "pairId": 169
+    },
+    "rut": {
+      "price": 2860.4,
+      "open": 2867.22,
+      "chgPct": -0.237861064027166,
+      "chgAbs": -6.819999999999709,
+      "ts": 1789761300000,
+      "source": "investing",
+      "pairId": 170
+    },
+    "gbpusd": {
+      "price": 1.3391,
+      "open": 1.3391,
+      "chgPct": 0.0,
+      "chgAbs": 0.0,
+      "ts": 1789995300000,
+      "source": "investing",
+      "pairId": 2
+    },
+    "audusd": {
+      "price": 0.7135,
+      "open": 0.7114,
+      "chgPct": 0.29519257801518,
+      "chgAbs": 0.0020999999999999908,
+      "ts": 1789995300000,
+      "source": "investing",
+      "pairId": 5
+    },
+    "eurusd": {
+      "price": 1.1485,
+      "open": 1.1486,
+      "chgPct": -0.008706251088280426,
+      "chgAbs": -9.999999999998899e-05,
+      "ts": 1789995300000,
+      "source": "investing",
+      "pairId": 1
+    },
+    "usdjpy": {
+      "price": 157.34,
+      "open": 156.83,
+      "chgPct": 0.3251928840145322,
+      "chgAbs": 0.5099999999999909,
+      "ts": 1789995300000,
+      "source": "investing",
+      "pairId": 3
+    },
+    "usdvnd": {
+      "price": 25994.936845,
+      "chgPct": null,
+      "source": "er-api"
+    },
+    "ust2s10s": {
+      "price": -0.2400000000000002,
+      "chgPct": null,
+      "chgAbs": null,
+      "source": "derived"
+    }
+  },
+  "errors": []
+}

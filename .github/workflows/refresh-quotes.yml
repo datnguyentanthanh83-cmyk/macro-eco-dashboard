@@ -1,0 +1,29 @@
+name: Refresh Investing quotes
+on:
+  schedule:
+    # Every 5 minutes — GitHub may delay; still far better than browser CORS
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Fetch quotes from Investing.com
+        run: python3 scripts/fetch_quotes.py
+      - name: Commit quotes.json
+        run: |
+          git config user.name "Macro Eco bot"
+          git config user.email "macro-eco-bot@users.noreply.github.com"
+          git add quotes.json
+          if git diff --cached --quiet; then
+            echo "No quote changes"
+          else
+            git commit -m "chore: refresh Investing quotes $(date -u +%Y-%m-%dT%H:%MZ)"
+            git push
+          fi
