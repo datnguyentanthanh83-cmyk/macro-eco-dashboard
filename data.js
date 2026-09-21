@@ -11,7 +11,7 @@ window.MACRO_DATA = {
     { label: "Fed funds", value: "3.75–4.00%", sub: "Sự kiện: +25bp ngày 16/09" },
     { label: "DXY", value: "100.22", subHtml: 'Tuần: <b class="up">+1.12%</b> · close 18/09' },
     { label: "UST 10Y", value: "~4.94%", subHtml: 'Ngày: <b class="down">−7bp</b> · tuần: <b class="down">−2bp</b>' },
-    { label: "VN-Index", value: "1,815.66", subHtml: 'Ngày: <b class="down">−0.39%</b> · tuần: <b class="up">+1.14%</b>' }
+    { label: "VN-Index", value: "1,799.67", subHtml: 'Ngày: <b class="down">−0.88%</b> · tuần: <b class="up">+1.14%</b>' }
   ],
   cards: [
     {
@@ -101,10 +101,10 @@ window.MACRO_DATA = {
     },
     {
       icon: "🇻🇳", title: "Asia / Việt Nam / EM", subtitle: "VN-Index · USD/VND", tag: "VN điều chỉnh", tagClass: "red",
-      level: "1,815.66",
+      level: "1,799.67",
       cols: ["Chỉ số", "% ngày", "% tuần"],
       rows: [
-        { name: "VN-Index", day: "−0.39%", dayClass: "down", week: "+1.14%", weekClass: "up" },
+        { name: "VN-Index", day: "−0.88%", dayClass: "down", week: "+1.14%", weekClass: "up" },
         { name: "HNX · 275.29", day: "+0.51%", dayClass: "up", week: "+0.96%", weekClass: "up" },
         { name: "SBV USD/VND · 25,637", day: "—", week: "—" },
         { name: "VCB mua/bán", day: "25,800/26,210", dayClass: "val", week: "—" }
