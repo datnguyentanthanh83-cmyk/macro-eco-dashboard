@@ -44,6 +44,22 @@
     fx:      { tz: 'America/New_York', days: [1,2,3,4,5], windows: [[0, 24*60]] }
   };
 
+  var SYMBOLS = {
+    dxy: 'DX-Y.NYB',
+    ust10y: '^TNX',
+    ust2y: '2YY=F',
+    vnindex: '^VNINDEX.VN',
+    wti: 'CL=F',
+    brent: 'BZ=F',
+    gold: 'GC=F',
+    spx: '^GSPC',
+    ndx: '^IXIC',
+    dji: '^DJI',
+    rut: '^RUT',
+    gbpusd: 'GBPUSD=X',
+    audusd: 'AUDUSD=X'
+  };
+
   function partsInTz(date, tz) {
     var fmt = new Intl.DateTimeFormat('en-US', {
       timeZone: tz, weekday: 'short', hour: '2-digit', minute: '2-digit', hour12: false
