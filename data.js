@@ -15,16 +15,16 @@ window.MACRO_DATA = {
   ],
   cards: [
     {
-      icon: "📈", title: "US Rates & Fed", subtitle: "Chính sách tiền tệ", tag: "+25bp sự kiện", tagClass: "green",
+      icon: "📈", title: "US Rates & Fed", subtitle: "So với kỳ gần nhất (FOMC)", tag: "+25bp vs kỳ trước", tagClass: "green",
       level: "3.75–4.00%", levelSmall: "Fed funds",
-      cols: ["Chỉ số", "% ngày", "% tuần"],
+      cols: ["Chỉ số", "Kỳ gần nhất", "Thay đổi"],
       rows: [
-        { name: "Fed funds · 3.75–4.00%", day: "—", week: "—" },
-        { name: "Sự kiện FOMC 16/09 · +25bp", day: "—", week: "—" },
-        { name: "Dot-plot YE26 · ~4.1%", day: "—", week: "—" }
+        { name: "Fed funds target", day: "3.50–3.75%", week: "+25bp", weekClass: "up" },
+        { name: "FOMC quyết định 16/09", day: "Giữ / chờ", week: "Hike", weekClass: "up" },
+        { name: "Dot-plot YE26 (median)", day: "—", week: "~4.1%" }
       ],
-      note: "Mức ngày/tuần không suy diễn từ sự kiện FOMC.",
-      news: "FOMC 16/09 tăng lãi lần đầu từ 2023; statement nhấn “timelier” về 2%. Tone vẫn hawkish."
+      note: "So sánh với kỳ họp / mức chính sách gần nhất — không dùng % ngày/% tuần.",
+      news: "FOMC 16/09 tăng lãi lần đầu từ 2023 (+25bp); statement nhấn “timelier” về 2%. Tone vẫn hawkish."
     },
     {
       icon: "📊", title: "US Bond Yields", subtitle: "2Y · 10Y · Curve", tag: "bp · FRED/H.15", tagClass: "amber",
@@ -49,16 +49,17 @@ window.MACRO_DATA = {
       news: "DXY giữ trên 100 sau FOMC; mức 100.22 là weekly close được dùng cho snapshot."
     },
     {
-      icon: "🔥", title: "Inflation", subtitle: "CPI · PCE", tag: "CPI nóng hơn", tagClass: "red",
+      icon: "🔥", title: "Inflation", subtitle: "So tháng trước (MoM) · YoY", tag: "CPI nóng hơn", tagClass: "red",
       level: "3.4%", levelSmall: "CPI y/y · Aug",
-      cols: ["Chỉ số", "% ngày", "% tuần"],
+      cols: ["Chỉ số", "MoM", "YoY"],
       rows: [
-        { name: "CPI Aug · +0.4% m/m · +3.4% y/y", day: "—", week: "—" },
-        { name: "Core CPI · +0.3% m/m · +2.4% y/y", day: "—", week: "—" },
-        { name: "PCE Jul · +3.7% / core +3.3%", day: "—", week: "—" }
+        { name: "CPI (Aug)", day: "+0.4%", dayClass: "up", week: "+3.4%", weekClass: "up" },
+        { name: "Core CPI (Aug)", day: "+0.3%", dayClass: "up", week: "+2.4%", weekClass: "flat" },
+        { name: "PCE (Jul)", day: "+0.2%", dayClass: "up", week: "+3.7%", weekClass: "up" },
+        { name: "Core PCE (Jul)", day: "+0.2%", dayClass: "up", week: "+3.3%", weekClass: "up" }
       ],
-      note: "Các mức m/m và y/y là số liệu công bố; thay đổi ngày/tuần chưa có.",
-      news: "CPI Aug +0.4% m/m, +3.4% y/y; core +0.3%/+2.4%. PCE Jul +3.7%, core +3.3%."
+      note: "MoM = so với tháng trước; YoY = so với cùng kỳ năm trước. Không dùng % ngày/% tuần.",
+      news: "CPI Aug tăng tốc MoM; core YoY dịu nhẹ. PCE Jul vẫn cao — catalyst Aug PCE 30/09."
     },
     {
       icon: "🌍", title: "FX — Majors", subtitle: "Open Mon · thanh khoản mỏng", tag: "USD bid", tagClass: "",
@@ -129,10 +130,10 @@ window.MACRO_DATA = {
     title: "Nhận định chung tình hình",
     paragraphs: [
       "<strong>1) Khung nghiên cứu — chế độ macro đang là gì?</strong> Snapshot đầu tuần (T2 21/09, ~08:40 ICT) cho thấy thị trường vẫn nằm trong chế độ <strong>“policy restriction + inflation residual + energy geopolitics”</strong>. FOMC ngày 16/09 đã tăng lãi +25bp lên 3.75–4.00% — lần tăng đầu kể từ 2023 — với thông điệp hướng tới việc đưa lạm phát về 2% “timelier”. Dot-plot trung vị quanh ~4.1% cuối 2026 hàm ý không gian cho thêm thắt chặt vẫn còn trong phân phối kỳ vọng. Hệ quả: USD được đỡ (DXY ~100.22, tuần +1.12%), lợi suất UST neo vùng cao (10Y ~4.94%, 2Y ~4.67%, 2s10s ~+27bp).",
-      "<strong>2) Lạm phát &amp; neo kỳ vọng.</strong> CPI tháng 8 tăng tốc m/m (+0.4%) với headline y/y 3.4%; core dịu nhẹ về y/y (2.4%) nhưng m/m vẫn +0.3%. PCE tháng 7 vẫn cao: headline +3.7% y/y, core +3.3%. <em>Disinflation chưa đủ “sạch”</em> để Fed xoay dovish thuyết phục. Catalyst: Aug PCE (30/09), Sep CPI (14/10).",
-      "<strong>3) Kênh truyền dẫn qua FX, equities và commodities.</strong> FX: USD bid trên differential; EUR/USD tuần −1.14%. Equities Mỹ selective (S&amp;P ~+0.2%, Nasdaq +0.4%). Dầu: WTI ~$100.30 (ngày −1.58%); Brent ~$103–105. Vàng ~$4,378 (+0.84% ngày / +1% tuần). <strong>Macro backdrop hỗ trợ USD &amp; yields; risk asset chưa all-clear.</strong>",
+      "<strong>2) Lạm phát & neo kỳ vọng.</strong> CPI tháng 8 tăng tốc m/m (+0.4%) với headline y/y 3.4%; core dịu nhẹ về y/y (2.4%) nhưng m/m vẫn +0.3%. PCE tháng 7 vẫn cao: headline +3.7% y/y, core +3.3%. <em>Disinflation chưa đủ “sạch”</em> để Fed xoay dovish thuyết phục. Catalyst: Aug PCE (30/09), Sep CPI (14/10).",
+      "<strong>3) Kênh truyền dẫn qua FX, equities và commodities.</strong> FX: USD bid trên differential; EUR/USD tuần −1.14%. Equities Mỹ selective (S&P ~+0.2%, Nasdaq +0.4%). Dầu: WTI ~$100.30 (ngày −1.58%); Brent ~$103–105. Vàng ~$4,378 (+0.84% ngày / +1% tuần). <strong>Macro backdrop hỗ trợ USD & yields; risk asset chưa all-clear.</strong>",
       "<strong>4) Việt Nam / EM — tách cấu trúc khỏi nhiễu ngắn hạn.</strong> FTSE Secondary Emerging Market hiệu lực hôm nay là sự kiện phân loại — dòng vốn thường phân tán theo thời gian. VN-Index 1,815.66 (−0.39% ngày / +1.14% tuần). Theo dõi nếu USD toàn cầu tiếp tục mạnh và dầu neo cao.",
-      "<strong>5) Chiến lược Trading.</strong> (i) Bias trung hạn: “USD/yields được đỡ — equities selective”. (ii) Rates/FX: theo dõi 10Y ~5% và DXY giữ trên 100. (iii) Energy: dầu &gt;$100 + địa chính trị → quản trị biến động. (iv) VN/EM: nâng hạng = thesis dài hạn; ngắn hạn ưu tiên thanh khoản, ngoại, beta dầu/USD. (v) Catalyst tuần: Lagarde/flash PMI, UNGA–Trump–Xi, PCE 30/09 — size nhỏ hơn trước sự kiện nếu nhiều ô “—”.",
+      "<strong>5) Chiến lược Trading.</strong> (i) Bias trung hạn: “USD/yields được đỡ — equities selective”. (ii) Rates/FX: theo dõi 10Y ~5% và DXY giữ trên 100. (iii) Energy: dầu >$100 + địa chính trị → quản trị biến động. (iv) VN/EM: nâng hạng = thesis dài hạn; ngắn hạn ưu tiên thanh khoản, ngoại, beta dầu/USD. (v) Catalyst tuần: Lagarde/flash PMI, UNGA–Trump–Xi, PCE 30/09 — size nhỏ hơn trước sự kiện nếu nhiều ô “—”.",
       "<strong>Kết luận vận hành:</strong> Research nói đây vẫn là môi trường macro thắt/đắt tiền + rủi ro năng lượng; trading nên selective và defensive-flexible, ưu tiên xác nhận từ dữ liệu thay vì narrative một ngày."
     ]
   },
