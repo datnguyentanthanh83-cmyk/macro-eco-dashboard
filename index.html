@@ -56,6 +56,20 @@ h1{font-size:1.48rem;letter-spacing:-.03em;color:#262626;font-weight:800}.brand 
 .err{padding:24px;border:1px solid #fecaca;background:#fff1f2;border-radius:16px;color:#9f1239;font-weight:700}
 @media(max-width:1100px){.hero,.grid{grid-template-columns:repeat(2,1fr)}.spotlight{grid-template-columns:1fr}}
 @media(max-width:700px){body{padding:16px}.hero,.grid{grid-template-columns:1fr}.header{align-items:flex-start}.thead,.tr{grid-template-columns:minmax(0,1fr) minmax(6.5rem,auto) minmax(3.75rem,auto)}.tr{font-size:.72rem}.thead{font-size:.58rem}}
+
+.live-board{margin:0 0 18px;padding:14px 16px;background:#fff;border:1px solid #dbe4f0;border-radius:16px;box-shadow:0 10px 28px rgba(25,42,70,.07)}
+.live-head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.live-head h2{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:#1d4ed8;font-weight:800;margin:0}
+.live-status{font-size:.72rem;font-weight:700;color:#555}
+.live-status.ok{color:#087443}.live-status.bad{color:#a15c00}
+.live-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
+.live-item{background:#f8fafc;border:1px solid #e6eaf0;border-radius:12px;padding:10px 10px 9px}
+.live-item .k{font-size:.65rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#666;margin-bottom:4px}
+.live-item .live-value{font-size:1.05rem;font-weight:800;color:#262626;font-variant-numeric:tabular-nums;white-space:nowrap}
+.live-item .live-chg{font-size:.72rem;font-weight:700;margin-top:3px;min-height:1em}
+.kpi.is-live{outline:1px solid rgba(8,116,67,.25)}
+@media(max-width:1100px){.live-grid{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:700px){.live-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
@@ -80,16 +94,31 @@ h1{font-size:1.48rem;letter-spacing:-.03em;color:#262626;font-weight:800}.brand 
   var m = d.meta;
   var html = '';
   html += '<header class="header"><div class="brand"><div class="logo">ME</div><div><h1>'+esc(m.title)+'</h1><p>'+esc(m.subtitle)+'</p></div></div><div class="meta"><div class="pill"><i class="dot"></i>'+esc(m.status)+'</div><div class="pill">'+esc(m.dateLabel)+'</div><div class="pill">'+esc(m.asOf)+'</div></div></header>';
+  var liveMap={ 'DXY':'dxy', 'UST 10Y':'ust10y', 'VN-Index':'vnindex' };
   html += '<section class="hero">'+(d.kpis||[]).map(function(k){
-    return '<div class="kpi"><div class="eyebrow">'+esc(k.label)+'</div><div class="value">'+esc(k.value)+'</div><div class="sub">'+(k.subHtml||esc(k.sub||''))+'</div></div>';
+    var lk=liveMap[k.label]||'';
+    return '<div class="kpi"'+(lk?(' data-live="'+lk+'"'):'')+'><div class="eyebrow">'+esc(k.label)+'</div><div class="value">'+esc(k.value)+'</div><div class="sub">'+(k.subHtml||esc(k.sub||''))+'</div></div>';
   }).join('')+'</section>';
+  html += '<section class="live-board" id="live-board"><div class="live-head"><h2>Near real-time · delayed</h2><div class="live-status" id="live-status">Chờ quote…</div></div><div class="live-grid">'
+    +'<div class="live-item" id="live-dxy"><div class="k">DXY</div><div class="live-value">—</div><div class="live-chg"></div></div>'
+    +'<div class="live-item" id="live-ust10y"><div class="k">UST 10Y</div><div class="live-value">—</div><div class="live-chg"></div></div>'
+    +'<div class="live-item" id="live-ust2y"><div class="k">UST 2Y</div><div class="live-value">—</div><div class="live-chg"></div></div>'
+    +'<div class="live-item" id="live-vn"><div class="k">VN-Index</div><div class="live-value">—</div><div class="live-chg"></div></div>'
+    +'<div class="live-item" id="live-usdvnd"><div class="k">USD/VND</div><div class="live-value">—</div><div class="live-chg">FX mid</div></div>'
+    +'<div class="live-item" id="live-eurusd"><div class="k">EUR/USD</div><div class="live-value">—</div><div class="live-chg">FX mid</div></div>'
+    +'<div class="live-item" id="live-usdjpy"><div class="k">USD/JPY</div><div class="live-value">—</div><div class="live-chg">FX mid</div></div>'
+    +'</div></section>';
   html += '<section class="grid">'+(d.cards||[]).map(function(c){
     var tag = '<span class="tag'+(c.tagClass?(' '+c.tagClass):'')+'">'+esc(c.tag)+'</span>';
     var level = '<div class="level">'+esc(c.level)+(c.levelSmall?'<small>'+esc(c.levelSmall)+'</small>':'')+'</div>';
     var cols = c.cols||['Chỉ số','% ngày','% tuần'];
     var thead = '<div class="thead"><span>'+esc(cols[0])+'</span><span>'+esc(cols[1])+'</span><span>'+esc(cols[2])+'</span></div>';
     var rows = (c.rows||[]).map(function(r){
-      return '<div class="tr"><span class="name">'+esc(r.name)+'</span>'+cell(r.day,r.dayClass||'')+cell(r.week,r.weekClass||'')+'</div>';
+      var fxAttr='';
+      if (/EUR\/USD/i.test(r.name)) fxAttr=' data-live-fx="eurusd"';
+      if (/USD\/JPY/i.test(r.name)) fxAttr=' data-live-fx="usdjpy"';
+      if (/USD\/VND|VCB|SBV USD/i.test(r.name)) fxAttr=' data-live-fx="usdvnd"';
+      return '<div class="tr"'+fxAttr+'><span class="name">'+esc(r.name)+'</span>'+cell(r.day,r.dayClass||'')+cell(r.week,r.weekClass||'')+'</div>';
     }).join('');
     return '<article class="card"><div class="card-top"><div class="cat"><div class="icon">'+esc(c.icon)+'</div><div><h3>'+esc(c.title)+'</h3><span>'+esc(c.subtitle)+'</span></div></div>'+tag+'</div>'+level+'<div class="table">'+thead+rows+'</div><div class="note">'+esc(c.note)+'</div><div class="news"><div class="news-label">Điểm nhấn</div><p>'+esc(c.news)+'</p></div></article>';
   }).join('')+'</section>';
@@ -103,5 +132,6 @@ h1{font-size:1.48rem;letter-spacing:-.03em;color:#262626;font-weight:800}.brand 
   document.title = (m.title||'Macro Markets') + ' · ' + (m.dateLabel||'');
 })();
 </script>
+<script>document.write('<script src="./live.js?v='+Date.now()+'"><\/script>');</script>
 </body>
 </html>
