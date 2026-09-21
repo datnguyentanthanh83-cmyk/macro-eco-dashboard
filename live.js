@@ -12,8 +12,12 @@
   }
   function fmtPct(n) {
     if (n == null || isNaN(n)) return '';
-    var s = (n >= 0 ? '+' : '') + Number(n).toFixed(2) + '%';
-    return s;
+    return (n >= 0 ? '+' : '') + Number(n).toFixed(2) + '%';
+  }
+  function fmtBp(n) {
+    if (n == null || isNaN(n)) return '';
+    var bp = Math.round(n * 100);
+    return (bp >= 0 ? '+' : '') + bp + 'bp';
   }
   function clsPct(n) {
     if (n == null || isNaN(n) || Math.abs(n) < 0.0001) return 'flat';
@@ -31,16 +35,14 @@
     try {
       return await fetchJson(url);
     } catch (e1) {
-      // Browser CORS fallback
       var proxies = [
         'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
         'https://corsproxy.io/?' + encodeURIComponent(url)
       ];
       var lastErr = e1;
       for (var i = 0; i < proxies.length; i++) {
-        try {
-          return await fetchJson(proxies[i]);
-        } catch (e2) { lastErr = e2; }
+        try { return await fetchJson(proxies[i]); }
+        catch (e2) { lastErr = e2; }
       }
       throw lastErr;
     }
@@ -56,16 +58,49 @@
     if ((chgPct == null || isNaN(chgPct)) && price != null && prev) {
       chgPct = ((price - prev) / prev) * 100;
     }
-    return { price: price, prev: prev, chgPct: chgPct, symbol: m.symbol };
+    var chgAbs = (price != null && prev != null) ? (price - prev) : null;
+    return { price: price, prev: prev, chgPct: chgPct, chgAbs: chgAbs, symbol: m.symbol };
   }
 
-  function setLive(key, priceText, subHtml) {
-    $all('[data-live="' + key + '"]').forEach(function (el) {
-      var v = el.querySelector('.value, .live-value');
-      var s = el.querySelector('.sub, .live-sub');
-      if (v) v.textContent = priceText;
-      if (s && subHtml != null) s.innerHTML = subHtml;
+  function setBoard(id, priceText, chgHtml) {
+    var el = $(id);
+    if (!el) return;
+    var v = el.querySelector('.live-value');
+    var c = el.querySelector('.live-chg');
+    if (v) v.textContent = priceText;
+    if (c && chgHtml != null) c.innerHTML = chgHtml;
+  }
+
+  function setLevel(key, text, small) {
+    $all('[data-live-level="' + key + '"]').forEach(function (el) {
       el.classList.add('is-live');
+      var sm = el.querySelector('small');
+      var keep = sm ? sm.outerHTML : (small ? '<small>' + small + '</small>' : '');
+      el.innerHTML = text + keep;
+    });
+  }
+
+  function setRow(key, nameText, dayText, dayClass) {
+    $all('[data-live-row="' + key + '"]').forEach(function (row) {
+      row.classList.add('is-live');
+      var name = row.querySelector('.name');
+      if (name && nameText) {
+        var base = name.getAttribute('data-base');
+        if (!base) {
+          base = name.textContent.split('·')[0].trim();
+          name.setAttribute('data-base', base);
+        }
+        name.textContent = base + ' · ' + nameText;
+      }
+      if (dayText != null) {
+        var cells = row.querySelectorAll('span');
+        // name, day, week
+        if (cells.length >= 2) {
+          var day = cells[1];
+          day.className = 'change live-day ' + (dayClass || 'flat');
+          day.textContent = dayText;
+        }
+      }
     });
   }
 
@@ -76,83 +111,116 @@
     el.className = 'live-status' + (ok ? ' ok' : ' bad');
   }
 
+  var SYMBOLS = {
+    dxy: 'DX-Y.NYB',
+    ust10y: '^TNX',
+    ust2y: '2YY=F',
+    vnindex: '^VNINDEX.VN',
+    wti: 'CL=F',
+    brent: 'BZ=F',
+    gold: 'GC=F',
+    spx: '^GSPC',
+    ndx: '^IXIC',
+    dji: '^DJI',
+    rut: '^RUT',
+    gbpusd: 'GBPUSD=X',
+    audusd: 'AUDUSD=X'
+  };
+
   async function refresh() {
     setStatus('Đang cập nhật…', true);
     var errors = [];
-    try {
-      var pack = await Promise.allSettled([
-        yahoo('DX-Y.NYB'),
-        yahoo('^TNX'),
-        yahoo('2YY=F'),
-        yahoo('^VNINDEX.VN'),
-        fetchJson('https://open.er-api.com/v6/latest/USD')
-      ]);
+    var keys = Object.keys(SYMBOLS);
+    var jobs = keys.map(function (k) { return yahoo(SYMBOLS[k]); });
+    jobs.push(fetchJson('https://open.er-api.com/v6/latest/USD'));
 
-      var dxy = pack[0].status === 'fulfilled' ? parseYahoo(pack[0].value) : null;
-      var tnx = pack[1].status === 'fulfilled' ? parseYahoo(pack[1].value) : null;
-      var y2 = pack[2].status === 'fulfilled' ? parseYahoo(pack[2].value) : null;
-      var vn = pack[3].status === 'fulfilled' ? parseYahoo(pack[3].value) : null;
-      var fx = pack[4].status === 'fulfilled' ? pack[4].value : null;
+    var pack = await Promise.allSettled(jobs);
+    var quotes = {};
+    keys.forEach(function (k, i) {
+      if (pack[i].status === 'fulfilled') {
+        var q = parseYahoo(pack[i].value);
+        if (q && q.price != null) quotes[k] = q;
+        else errors.push(k.toUpperCase());
+      } else errors.push(k.toUpperCase());
+    });
+    var fxPack = pack[keys.length];
+    var fx = fxPack.status === 'fulfilled' ? fxPack.value : null;
 
-      if (dxy && dxy.price != null) {
-        setLive('dxy', fmtNum(dxy.price, 2),
-          'Live · ngày: <b class="' + clsPct(dxy.chgPct) + '">' + fmtPct(dxy.chgPct) + '</b> · delayed');
-        var el = $('#live-dxy'); if (el) { el.querySelector('.live-value').textContent = fmtNum(dxy.price, 2);
-          el.querySelector('.live-chg').innerHTML = '<b class="' + clsPct(dxy.chgPct) + '">' + fmtPct(dxy.chgPct) + '</b>'; }
-      } else errors.push('DXY');
-
-      if (tnx && tnx.price != null) {
-        setLive('ust10y', '~' + fmtNum(tnx.price, 2) + '%',
-          'Live · ngày: <b class="' + clsPct(tnx.chgPct) + '">' + fmtPct(tnx.chgPct) + '</b> · delayed');
-        var el10 = $('#live-ust10y'); if (el10) { el10.querySelector('.live-value').textContent = fmtNum(tnx.price, 3) + '%';
-          el10.querySelector('.live-chg').innerHTML = '<b class="' + clsPct(tnx.chgPct) + '">' + fmtPct(tnx.chgPct) + '</b>'; }
-      } else errors.push('UST10Y');
-
-      if (y2 && y2.price != null) {
-        var el2 = $('#live-ust2y'); if (el2) { el2.querySelector('.live-value').textContent = fmtNum(y2.price, 3) + '%';
-          el2.querySelector('.live-chg').innerHTML = '<b class="' + clsPct(y2.chgPct) + '">' + fmtPct(y2.chgPct) + '</b>'; }
-      } else errors.push('UST2Y');
-
-      if (vn && vn.price != null) {
-        setLive('vnindex', fmtNum(vn.price, 2),
-          'Live · ngày: <b class="' + clsPct(vn.chgPct) + '">' + fmtPct(vn.chgPct) + '</b> · delayed');
-        var elv = $('#live-vn'); if (elv) { elv.querySelector('.live-value').textContent = fmtNum(vn.price, 2);
-          elv.querySelector('.live-chg').innerHTML = '<b class="' + clsPct(vn.chgPct) + '">' + fmtPct(vn.chgPct) + '</b>'; }
-      } else errors.push('VNINDEX');
-
-      if (fx && fx.rates) {
-        var vnd = fx.rates.VND, eur = fx.rates.EUR, jpy = fx.rates.JPY;
-        var eurusd = eur ? (1 / eur) : null;
-        var usdjpy = jpy || null;
-        var elV = $('#live-usdvnd'); if (elV && vnd) elV.querySelector('.live-value').textContent = fmtNum(vnd, 0);
-        var elE = $('#live-eurusd'); if (elE && eurusd) elE.querySelector('.live-value').textContent = fmtNum(eurusd, 4);
-        var elJ = $('#live-usdjpy'); if (elJ && usdjpy) elJ.querySelector('.live-value').textContent = fmtNum(usdjpy, 2);
-        // also patch FX card rows if present
-        $all('[data-live-fx]').forEach(function (row) {
-          var k = row.getAttribute('data-live-fx');
-          var val = null;
-          if (k === 'usdvnd') val = vnd != null ? fmtNum(vnd, 0) : null;
-          if (k === 'eurusd') val = eurusd != null ? fmtNum(eurusd, 4) : null;
-          if (k === 'usdjpy') val = usdjpy != null ? fmtNum(usdjpy, 2) : null;
-          if (val) {
-            var name = row.querySelector('.name');
-            if (name) {
-              var base = name.getAttribute('data-base') || name.textContent.split('·')[0].trim();
-              name.setAttribute('data-base', base);
-              name.textContent = base + ' · ' + val;
-            }
-          }
-        });
-      } else errors.push('FX');
-
-      var now = new Date();
-      var ict = now.toLocaleTimeString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      if (errors.length) setStatus('Live một phần · ' + ict + ' ICT · lỗi: ' + errors.join(', ') + ' · delayed', false);
-      else setStatus('Live · cập nhật ' + ict + ' ICT · poll 45s · nguồn công khai (delayed)', true);
-    } catch (e) {
-      setStatus('Live tạm lỗi — giữ snapshot sáng. Thử lại sau.', false);
-      console.warn('live refresh failed', e);
+    if (quotes.dxy) {
+      setBoard('#live-dxy', fmtNum(quotes.dxy.price, 2),
+        '<b class="' + clsPct(quotes.dxy.chgPct) + '">' + fmtPct(quotes.dxy.chgPct) + '</b>');
+      setRow('dxy', fmtNum(quotes.dxy.price, 2), fmtPct(quotes.dxy.chgPct), clsPct(quotes.dxy.chgPct));
+      setLevel('dxy', fmtNum(quotes.dxy.price, 2));
     }
+
+    if (quotes.ust10y) {
+      setBoard('#live-ust10y', fmtNum(quotes.ust10y.price, 3) + '%',
+        '<b class="' + clsPct(quotes.ust10y.chgAbs) + '">' + fmtBp(quotes.ust10y.chgAbs) + '</b>');
+      setRow('ust10y', fmtNum(quotes.ust10y.price, 3) + '%', fmtBp(quotes.ust10y.chgAbs), clsPct(quotes.ust10y.chgAbs));
+      setLevel('ust10y', fmtNum(quotes.ust10y.price, 2) + '%', '10Y live');
+    }
+
+    if (quotes.ust2y) {
+      setBoard('#live-ust2y', fmtNum(quotes.ust2y.price, 3) + '%',
+        '<b class="' + clsPct(quotes.ust2y.chgAbs) + '">' + fmtBp(quotes.ust2y.chgAbs) + '</b>');
+      setRow('ust2y', fmtNum(quotes.ust2y.price, 3) + '%', fmtBp(quotes.ust2y.chgAbs), clsPct(quotes.ust2y.chgAbs));
+    }
+
+    if (quotes.ust2y && quotes.ust10y) {
+      var spread = quotes.ust10y.price - quotes.ust2y.price;
+      var spreadBp = Math.round(spread * 100);
+      setRow('ust2s10s', (spread >= 0 ? '+' : '') + spreadBp + 'bp', '—', 'flat');
+    }
+
+    if (quotes.vnindex) {
+      setBoard('#live-vn', fmtNum(quotes.vnindex.price, 2),
+        '<b class="' + clsPct(quotes.vnindex.chgPct) + '">' + fmtPct(quotes.vnindex.chgPct) + '</b>');
+      setRow('vnindex', fmtNum(quotes.vnindex.price, 2), fmtPct(quotes.vnindex.chgPct), clsPct(quotes.vnindex.chgPct));
+      setLevel('vnindex', fmtNum(quotes.vnindex.price, 2));
+    }
+
+    [['wti', 2, '$'], ['brent', 2, '$'], ['gold', 0, '$']].forEach(function (x) {
+      var k = x[0], d = x[1], pre = x[2];
+      if (!quotes[k]) return;
+      var q = quotes[k];
+      setRow(k, pre + fmtNum(q.price, d), fmtPct(q.chgPct), clsPct(q.chgPct));
+      if (k === 'wti') setLevel('wti', pre + fmtNum(q.price, d), 'WTI live');
+    });
+
+    [['spx', 0], ['ndx', 0], ['dji', 0], ['rut', 0]].forEach(function (x) {
+      var k = x[0], d = x[1];
+      if (!quotes[k]) return;
+      var q = quotes[k];
+      setRow(k, fmtNum(q.price, d), fmtPct(q.chgPct), clsPct(q.chgPct));
+      if (k === 'spx') setLevel('spx', fmtNum(q.price, 0), 'S&P 500');
+    });
+
+    [['gbpusd', 4], ['audusd', 4]].forEach(function (x) {
+      var k = x[0], d = x[1];
+      if (!quotes[k]) return;
+      var q = quotes[k];
+      setRow(k, fmtNum(q.price, d), fmtPct(q.chgPct), clsPct(q.chgPct));
+    });
+
+    if (fx && fx.rates) {
+      var vnd = fx.rates.VND, eur = fx.rates.EUR, jpy = fx.rates.JPY;
+      var eurusd = eur ? (1 / eur) : null;
+      var usdjpy = jpy || null;
+      setBoard('#live-usdvnd', vnd != null ? fmtNum(vnd, 0) : '—', 'FX mid');
+      setBoard('#live-eurusd', eurusd != null ? fmtNum(eurusd, 4) : '—', 'FX mid');
+      setBoard('#live-usdjpy', usdjpy != null ? fmtNum(usdjpy, 2) : '—', 'FX mid');
+      if (eurusd != null) {
+        setRow('eurusd', fmtNum(eurusd, 4), null, null);
+        setLevel('eurusd', fmtNum(eurusd, 4), 'EUR/USD mid');
+      }
+      if (usdjpy != null) setRow('usdjpy', fmtNum(usdjpy, 2), null, null);
+      if (vnd != null) setRow('usdvnd', fmtNum(vnd, 0), null, null);
+    } else errors.push('FX');
+
+    var now = new Date();
+    var ict = now.toLocaleTimeString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    if (errors.length) setStatus('Live một phần · ' + ict + ' ICT · thiếu: ' + errors.slice(0, 6).join(', ') + (errors.length > 6 ? '…' : '') + ' · delayed', false);
+    else setStatus('Live · cập nhật ' + ict + ' ICT · poll 45s · bảng chỉ số đồng bộ · delayed', true);
   }
 
   function boot() {
