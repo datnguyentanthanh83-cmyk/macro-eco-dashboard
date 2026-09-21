@@ -23,6 +23,15 @@
     if (n == null || isNaN(n) || Math.abs(n) < 0.0001) return 'flat';
     return n > 0 ? 'up' : 'down';
   }
+  function deriveChg(item) {
+    if (!item) return { pct: null, abs: null };
+    var pct = item.chgPct, abs = item.chgAbs;
+    if ((pct == null || isNaN(pct)) && item.price != null && item.prevClose) {
+      pct = ((item.price - item.prevClose) / item.prevClose) * 100;
+      abs = item.price - item.prevClose;
+    }
+    return { pct: pct, abs: abs };
+  }
   function chgHtml(text, cls, closed) {
     var label = '<b class="' + (cls || 'flat') + '">' + text + '</b>';
     if (closed) label += ' <span style="color:#7a8699;font-weight:700">· đóng</span>';
@@ -109,11 +118,14 @@
       if (!item || item.price == null) return null;
       var closed = SESSIONS[key] ? !isSessionOpen(key, now) : false;
       var priceText = fmtPrice(item.price);
-      var dayText = dayFmt ? dayFmt(item) : fmtPct(item.chgPct);
-      var ref = item.chgPct != null ? item.chgPct : item.chgAbs;
-      var dayCls = clsPct(ref);
+      var d = deriveChg(item);
+      // mutate so dayFmt (bp) can use refreshed abs
+      if (item.chgPct == null && d.pct != null) item.chgPct = d.pct;
+      if (item.chgAbs == null && d.abs != null) item.chgAbs = d.abs;
+      var dayText = dayFmt ? dayFmt(item) : fmtPct(d.pct);
+      var dayCls = clsPct(d.pct != null ? d.pct : d.abs);
       setRow(key, priceText, dayText, dayCls, closed);
-      return { priceText: priceText, dayText: dayText, dayCls: dayCls, closed: closed, item: item };
+      return { priceText: priceText, dayText: dayText, dayCls: dayCls, closed: closed, item: item, chgPct: d.pct };
     }
 
     var dxy = apply('dxy', function (p) { return fmtNum(p, 2); });
@@ -138,8 +150,18 @@
 
     var vn = apply('vnindex', function (p) { return fmtNum(p, 2); });
     if (vn) {
-      setBoard('#live-vn', vn.priceText, chgHtml(vn.dayText, vn.dayCls, vn.closed), vn.closed);
+      // VN: luôn hiện % vs prior close (kể cả ngoài phiên) — không để trống
+      var vnChg = (vn.dayText && vn.dayText !== '—') ? vn.dayText : fmtPct(vn.chgPct);
+      setBoard('#live-vn', vn.priceText, chgHtml(vnChg, vn.dayCls, vn.closed), vn.closed);
+      var vnEl = $('#live-vn');
+      if (vnEl) {
+        var k = vnEl.querySelector('.k');
+        if (k) k.textContent = vn.closed ? 'VN-Index · đóng cửa' : 'VN-Index';
+      }
       setLevel('vnindex', vn.priceText);
+    } else {
+      // fallback rõ ràng nếu thiếu quotes
+      setBoard('#live-vn', '—', '<span style="color:#7a8699;font-weight:700">chưa có % đổi</span>', true);
     }
 
     [['wti', 2, '$'], ['brent', 2, '$'], ['gold', 0, '$']].forEach(function (x) {
