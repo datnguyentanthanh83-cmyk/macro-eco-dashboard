@@ -92,6 +92,7 @@ h1{font-size:1.48rem;letter-spacing:-.03em;color:#262626;font-weight:800}.brand 
 .analysis p{font-size:.88rem;color:#333;font-weight:600;line-height:1.68;margin-bottom:12px}
 .analysis p:last-child{margin-bottom:0}
 .analysis strong{color:#262626;font-weight:800}
+.tr.is-live .name{color:#0f172a}.tr.is-live .change.live-day{font-weight:800}.live-item.is-closed .live-chg,.tr.is-closed .name{color:#7a8699}.card .level.is-live{outline:1px solid rgba(8,116,67,.22);outline-offset:2px;border-radius:6px}
 .section-label{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:#667085;font-weight:800;margin:4px 0 10px}
 
 </style>
@@ -130,17 +131,41 @@ h1{font-size:1.48rem;letter-spacing:-.03em;color:#262626;font-weight:800}.brand 
   html += '<div class="section-label">Bảng chỉ số chi tiết</div>';
   html += '<section class="grid">'+(d.cards||[]).map(function(c){
     var tag = '<span class="tag'+(c.tagClass?(' '+c.tagClass):'')+'">'+esc(c.tag)+'</span>';
-    var level = '<div class="level">'+esc(c.level)+(c.levelSmall?'<small>'+esc(c.levelSmall)+'</small>':'')+'</div>';
     var cols = c.cols||['Chỉ số','% ngày','% tuần'];
     var thead = '<div class="thead"><span>'+esc(cols[0])+'</span><span>'+esc(cols[1])+'</span><span>'+esc(cols[2])+'</span></div>';
     var rows = (c.rows||[]).map(function(r){
-      var fxAttr='';
-      if (/EUR\/USD/i.test(r.name)) fxAttr=' data-live-fx="eurusd"';
-      if (/USD\/JPY/i.test(r.name)) fxAttr=' data-live-fx="usdjpy"';
-      if (/USD\/VND|VCB|SBV USD/i.test(r.name)) fxAttr=' data-live-fx="usdvnd"';
-      return '<div class="tr"'+fxAttr+'><span class="name">'+esc(r.name)+'</span>'+cell(r.day,r.dayClass||'')+cell(r.week,r.weekClass||'')+'</div>';
+      var liveAttr='';
+      var nk = r.live || '';
+      if (!nk) {
+        if (/^DXY\b/i.test(r.name)) nk='dxy';
+        else if (/^2Y\s*UST|^UST\s*2Y/i.test(r.name)) nk='ust2y';
+        else if (/^10Y\s*UST|^UST\s*10Y/i.test(r.name)) nk='ust10y';
+        else if (/^2s10s/i.test(r.name)) nk='ust2s10s';
+        else if (/^VN-Index/i.test(r.name)) nk='vnindex';
+        else if (/EUR\/USD/i.test(r.name)) nk='eurusd';
+        else if (/GBP\/USD/i.test(r.name)) nk='gbpusd';
+        else if (/USD\/JPY/i.test(r.name)) nk='usdjpy';
+        else if (/AUD\/USD/i.test(r.name)) nk='audusd';
+        else if (/SBV\s*USD\/VND|USD\/VND/i.test(r.name)) nk='usdvnd';
+        else if (/^WTI\b/i.test(r.name)) nk='wti';
+        else if (/^Brent\b/i.test(r.name)) nk='brent';
+        else if (/^Gold\b/i.test(r.name)) nk='gold';
+        else if (/^S&P\s*500/i.test(r.name)) nk='spx';
+        else if (/^Nasdaq/i.test(r.name)) nk='ndx';
+        else if (/^Dow\b/i.test(r.name)) nk='dji';
+        else if (/^Russell/i.test(r.name)) nk='rut';
+      }
+      if (nk) liveAttr=' data-live-row="'+nk+'"';
+      return '<div class="tr"'+liveAttr+'><span class="name">'+esc(r.name)+'</span>'+cell(r.day,r.dayClass||'')+cell(r.week,r.weekClass||'')+'</div>';
     }).join('');
-    return '<article class="card"><div class="card-top"><div class="cat"><div class="icon">'+esc(c.icon)+'</div><div><h3>'+esc(c.title)+'</h3><span>'+esc(c.subtitle)+'</span></div></div>'+tag+'</div>'+level+'<div class="table">'+thead+rows+'</div><div class="note">'+esc(c.note)+'</div><div class="news"><div class="news-label">Điểm nhấn</div><p>'+esc(c.news)+'</p></div></article>';
+    var liveLevel='';
+    if (/^DXY$/i.test(c.title)) liveLevel=' data-live-level="dxy"';
+    else if (/Oil|Commodities/i.test(c.title)) liveLevel=' data-live-level="wti"';
+    else if (/Việt Nam/i.test(c.title)) liveLevel=' data-live-level="vnindex"';
+    else if (/US Bond Yields/i.test(c.title)) liveLevel=' data-live-level="ust10y"';
+    else if (/Equities/i.test(c.title)) liveLevel=' data-live-level="spx"';
+    else if (/FX/i.test(c.title)) liveLevel=' data-live-level="eurusd"';
+    return '<article class="card"><div class="card-top"><div class="cat"><div class="icon">'+esc(c.icon)+'</div><div><h3>'+esc(c.title)+'</h3><span>'+esc(c.subtitle)+'</span></div></div>'+tag+'</div><div class="level"'+liveLevel+'>'+esc(c.level)+(c.levelSmall?'<small>'+esc(c.levelSmall)+'</small>':'')+'</div><div class="table">'+thead+rows+'</div><div class="note">'+esc(c.note)+'</div><div class="news"><div class="news-label">Điểm nhấn</div><p>'+esc(c.news)+'</p></div></article>';
   }).join('')+'</section>';
   html += '<div class="section-label">Tin địa chính trị · 24h</div>';
   var geo = d.geoNews || {};
