@@ -1,156 +1,31 @@
 {
-  "asOf": "2026-09-21 20:08:08 ICT",
-  "asOfUnix": 1789996088,
+  "asOf": "2026-09-22 01:37:28 ICT",
+  "asOfUnix": 1790015848,
   "provider": "Investing.com (vs prior close) + er-api FX",
   "quotes": {
-    "dxy": {
-      "price": 99.993,
-      "prevClose": 99.99,
-      "chgPct": 0.003000300030003114,
-      "chgAbs": 0.0030000000000001137,
-      "ts": 1789995900000,
-      "source": "investing",
-      "pairId": 8827
-    },
-    "ust10y": {
-      "price": 4.731,
-      "prevClose": 4.756,
-      "chgPct": -0.5256518082422278,
-      "chgAbs": -0.025000000000000355,
-      "ts": 1789995300000,
-      "source": "investing",
-      "pairId": 23701
-    },
-    "ust2y": {
-      "price": 4.967,
-      "prevClose": 4.981,
-      "chgPct": -0.28106805862277123,
-      "chgAbs": -0.014000000000000234,
-      "ts": 1789995900000,
-      "source": "investing",
-      "pairId": 23705
-    },
-    "vnindex": {
-      "price": 1799.67,
-      "prevClose": 1815.66,
-      "chgPct": -0.8806714913585147,
-      "chgAbs": -15.990000000000009,
-      "ts": 1789976700000,
-      "source": "investing",
-      "pairId": 41063
-    },
-    "wti": {
-      "price": 93.07,
-      "prevClose": 95.66,
-      "chgPct": -2.7075057495295876,
-      "chgAbs": -2.5900000000000034,
-      "ts": 1789995900000,
-      "source": "investing",
-      "pairId": 8849
-    },
-    "brent": {
-      "price": 100.86,
-      "prevClose": 103.41,
-      "chgPct": -2.465912387583403,
-      "chgAbs": -2.549999999999997,
-      "ts": 1789995900000,
-      "source": "investing",
-      "pairId": 8833
-    },
-    "gold": {
-      "price": 4398.26,
-      "prevClose": 4411.34,
-      "chgPct": -0.2965085438891567,
-      "chgAbs": -13.079999999999927,
-      "ts": 1789995900000,
-      "source": "investing",
-      "pairId": 8830
-    },
-    "spx": {
-      "price": 7650.5,
-      "prevClose": 7637.76,
-      "chgPct": 0.16680283224400586,
-      "chgAbs": 12.739999999999782,
-      "ts": 1789761300000,
-      "source": "investing",
-      "pairId": 166
-    },
-    "ndx": {
-      "price": 26522.55,
-      "prevClose": 26418.3,
-      "chgPct": 0.39461282520071317,
-      "chgAbs": 104.25,
-      "ts": 1789761300000,
-      "source": "investing",
-      "pairId": 14958
-    },
-    "dji": {
-      "price": 51682.64,
-      "prevClose": 51778.04,
-      "chgPct": -0.1842479939372009,
-      "chgAbs": -95.40000000000146,
-      "ts": 1789762800000,
-      "source": "investing",
-      "pairId": 169
-    },
-    "rut": {
-      "price": 2860.4,
-      "prevClose": 2874.63,
-      "chgPct": -0.4950202286903016,
-      "chgAbs": -14.230000000000018,
-      "ts": 1789761300000,
-      "source": "investing",
-      "pairId": 170
-    },
-    "gbpusd": {
-      "price": 1.3391,
-      "prevClose": 1.339,
-      "chgPct": 0.007468259895443539,
-      "chgAbs": 9.999999999998899e-05,
-      "ts": 1789995900000,
-      "source": "investing",
-      "pairId": 2
-    },
-    "audusd": {
-      "price": 0.7134,
-      "prevClose": 0.7122,
-      "chgPct": 0.1684919966301571,
-      "chgAbs": 0.0011999999999999789,
-      "ts": 1789995900000,
-      "source": "investing",
-      "pairId": 5
-    },
-    "eurusd": {
-      "price": 1.1483,
-      "prevClose": 1.1479,
-      "chgPct": 0.03484624096177176,
-      "chgAbs": 0.000400000000000178,
-      "ts": 1789995900000,
-      "source": "investing",
-      "pairId": 1
-    },
-    "usdjpy": {
-      "price": 157.33,
-      "prevClose": 157.0,
-      "chgPct": 0.21019108280255572,
-      "chgAbs": 0.3300000000000125,
-      "ts": 1789995900000,
-      "source": "investing",
-      "pairId": 3
-    },
     "usdvnd": {
       "price": 25994.936845,
       "prevClose": 25994.936845,
       "chgPct": 0.0,
       "chgAbs": 0.0,
       "source": "er-api"
-    },
-    "ust2s10s": {
-      "price": -0.23599999999999977,
-      "chgPct": null,
-      "chgAbs": null,
-      "source": "derived"
     }
   },
-  "errors": []
+  "errors": [
+    "dxy:HTTP Error 403: Forbidden",
+    "ust10y:HTTP Error 403: Forbidden",
+    "ust2y:HTTP Error 403: Forbidden",
+    "vnindex:HTTP Error 403: Forbidden",
+    "wti:HTTP Error 403: Forbidden",
+    "brent:HTTP Error 403: Forbidden",
+    "gold:HTTP Error 403: Forbidden",
+    "spx:HTTP Error 403: Forbidden",
+    "ndx:HTTP Error 403: Forbidden",
+    "dji:HTTP Error 403: Forbidden",
+    "rut:HTTP Error 403: Forbidden",
+    "gbpusd:HTTP Error 403: Forbidden",
+    "audusd:HTTP Error 403: Forbidden",
+    "eurusd:HTTP Error 403: Forbidden",
+    "usdjpy:HTTP Error 403: Forbidden"
+  ]
 }
