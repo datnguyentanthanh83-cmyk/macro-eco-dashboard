@@ -25,7 +25,7 @@ h1{font-size:1.48rem;letter-spacing:-.03em;color:#262626;font-weight:800}.brand 
 .tag.green{background:var(--green-bg);color:var(--green)}.tag.red{background:var(--red-bg);color:var(--red)}.tag.amber{background:var(--amber-bg);color:var(--amber)}
 .level{font-size:1.32rem;font-weight:850;letter-spacing:-.035em;color:#262626}.level small{font-size:.7rem;font-weight:700;color:#666666;margin-left:6px;letter-spacing:0}
 .table{border:1px solid var(--line);border-radius:12px;overflow:hidden}
-.thead,.tr{display:grid;grid-template-columns:minmax(0,1fr) 74px 74px;gap:6px;align-items:center}
+.thead,.tr{display:grid;grid-template-columns:minmax(0,1fr) 96px 88px;gap:6px;align-items:center}
 .thead{background:#f1f5f9;color:#666666;font-size:.63rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:7px 10px}
 .thead span:not(:first-child),.tr span:not(:first-child){text-align:right}
 .tr{padding:8px 10px;border-top:1px solid #eef1f5;font-size:.77rem;min-height:35px}
@@ -96,7 +96,7 @@ h1{font-size:1.48rem;letter-spacing:-.03em;color:#262626;font-weight:800}.brand 
   var cm = d.comment||{};
   html += '<section class="comment"><div class="badge">'+esc(cm.badge||'Macro Eco · Bình luận')+'</div><h2>'+esc(cm.title||'Nhận định chung tình hình')+'</h2>'+(cm.paragraphs||[]).map(function(p){return '<p>'+p+'</p>';}).join('')+'</section>';
   html += '<section class="spotlight"><div class="panel"><h2>Bottom line hôm nay</h2><ul>'+(d.bottomLine||[]).map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul></div><div class="side"><h2>Lịch catalyst</h2><div class="cal">'+(d.catalysts||[]).map(function(x){return '<div class="cal-item"><span class="when">'+esc(x.when)+'</span><span class="what">'+esc(x.what)+'</span></div>';}).join('')+'</div></div></section>';
-  html += '<div class="legend"><b>Quy ước:</b><span><i style="background:#087443"></i> tăng</span><span><i style="background:#c73545"></i> giảm</span><span><i style="background:#a7b0bd"></i> chưa có dữ liệu = —</span><span>Chỉ đổi data.js mỗi ngày</span></div>';
+  html += '<div class="legend"><b>Quy ước:</b><span><i style="background:#087443"></i> tăng</span><span><i style="background:#c73545"></i> giảm</span><span><i style="background:#a7b0bd"></i> chưa có dữ liệu = —</span><span>Fed: vs kỳ gần nhất · Inflation: MoM/YoY · còn lại: % ngày/% tuần</span></div>';
   var f = d.footer||{};
   html += '<footer class="footer"><span>'+esc(f.left||'')+'</span><span class="source">'+esc(f.source||'')+'</span></footer>';
   app.innerHTML = html;
