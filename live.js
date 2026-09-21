@@ -109,7 +109,37 @@
     });
   }
 
+
+  function fillCarousel(payload) {
+    var q = (payload && payload.quotes) || {};
+    var asof = document.getElementById('carousel-asof');
+    if (asof) asof.textContent = payload.asOf || 'Live';
+    function setC(key, valText, chgText, cls) {
+      var el = document.querySelector('.c-card[data-c="' + key + '"]');
+      if (!el) return;
+      var v = el.querySelector('.c-val');
+      var c = el.querySelector('.c-chg');
+      if (v) v.textContent = valText;
+      if (c) {
+        c.className = 'c-chg ' + (cls || 'flat');
+        c.style.color = cls === 'up' ? '#4ade80' : (cls === 'down' ? '#f87171' : '#94a3b8');
+        c.textContent = chgText || '';
+      }
+    }
+    function pct(item) {
+      var d = deriveChg(item);
+      return { t: fmtPct(d.pct), c: clsPct(d.pct) };
+    }
+    if (q.dxy) { var p = pct(q.dxy); setC('dxy', fmtNum(q.dxy.price, 2), p.t, p.c); }
+    if (q.ust10y) { var u = deriveChg(q.ust10y); setC('ust10y', fmtNum(q.ust10y.price, 3) + '%', fmtBp(u.abs), clsPct(u.abs)); }
+    if (q.vnindex) { var v = pct(q.vnindex); setC('vnindex', fmtNum(q.vnindex.price, 2), v.t, v.c); }
+    if (q.wti) { var w = pct(q.wti); setC('wti', '$' + fmtNum(q.wti.price, 2), w.t, w.c); }
+    if (q.eurusd) { var e = pct(q.eurusd); setC('eurusd', fmtNum(q.eurusd.price, 4), e.t, e.c); }
+    if (q.gold) { var g = pct(q.gold); setC('gold', '$' + fmtNum(q.gold.price, 0), g.t, g.c); }
+  }
+
   function applyQuotes(payload) {
+    fillCarousel(payload);
     var q = (payload && payload.quotes) || {};
     var now = new Date();
 
