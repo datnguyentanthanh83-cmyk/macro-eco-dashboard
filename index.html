@@ -70,6 +70,30 @@ h1{font-size:1.48rem;letter-spacing:-.03em;color:#262626;font-weight:800}.brand 
 .kpi.is-live{outline:1px solid rgba(8,116,67,.25)}
 @media(max-width:1100px){.live-grid{grid-template-columns:repeat(4,1fr)}}
 @media(max-width:700px){.live-grid{grid-template-columns:repeat(2,1fr)}}
+
+.geo-feed{margin:0 0 18px;background:#fff;border:1px solid #dbe4f0;border-radius:16px;box-shadow:0 10px 28px rgba(25,42,70,.07);overflow:hidden}
+.geo-feed-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 18px 10px;border-bottom:1px solid #eef1f5}
+.geo-feed-head h2{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:#1d4ed8;font-weight:800;margin:0}
+.geo-feed-head .sub{font-size:.72rem;font-weight:700;color:#666}
+.geo-item{padding:16px 18px 15px;border-top:1px solid #eef1f5}
+.geo-item:first-of-type{border-top:none}
+.geo-item .meta-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:7px}
+.geo-item .geo-tag{display:inline-flex;padding:3px 8px;border-radius:999px;background:#eef4ff;color:#1d4ed8;font-size:.65rem;font-weight:800;letter-spacing:.03em;text-transform:uppercase}
+.geo-item .geo-tag.oil{background:#fff0f1;color:#c73545}
+.geo-item .geo-tag.uscn{background:#e9f8ef;color:#087443}
+.geo-item .geo-tag.eu{background:#fff7e6;color:#a15c00}
+.geo-item .when{font-size:.68rem;font-weight:700;color:#7a8699}
+.geo-item h3{font-size:1.02rem;font-weight:800;color:#1a1a1a;letter-spacing:-.02em;line-height:1.35;margin:0 0 8px}
+.geo-item p{font-size:.86rem;color:#333;font-weight:600;line-height:1.55;margin:0}
+.geo-item a.more{display:inline-block;margin-top:8px;font-size:.78rem;font-weight:700;color:#275bc5;text-decoration:none}
+.analysis{margin:0 0 18px;padding:22px 24px;background:linear-gradient(135deg,#fff,#f7fbff);border:1px solid #dbe4f0;border-radius:16px;box-shadow:0 10px 28px rgba(25,42,70,.07)}
+.analysis .badge{display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:#eef4ff;color:#1d4ed8;font-size:.7rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;margin-bottom:12px}
+.analysis h2{font-size:1.05rem;font-weight:800;color:#262626;letter-spacing:-.02em;margin-bottom:10px}
+.analysis p{font-size:.88rem;color:#333;font-weight:600;line-height:1.68;margin-bottom:12px}
+.analysis p:last-child{margin-bottom:0}
+.analysis strong{color:#262626;font-weight:800}
+.section-label{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:#667085;font-weight:800;margin:4px 0 10px}
+
 </style>
 </head>
 <body>
@@ -108,6 +132,26 @@ h1{font-size:1.48rem;letter-spacing:-.03em;color:#262626;font-weight:800}.brand 
     +'<div class="live-item" id="live-eurusd"><div class="k">EUR/USD</div><div class="live-value">—</div><div class="live-chg">FX mid</div></div>'
     +'<div class="live-item" id="live-usdjpy"><div class="k">USD/JPY</div><div class="live-value">—</div><div class="live-chg">FX mid</div></div>'
     +'</div></section>';
+  html += '<div class="section-label">Tin địa chính trị · 24h</div>';
+  var geo = d.geoNews || {};
+  html += '<section class="geo-feed"><div class="geo-feed-head"><h2>'+esc(geo.title||'Geo Pulse · Tin quan trọng')+'</h2><div class="sub">'+esc(geo.window||'24h gần nhất')+'</div></div>';
+  (geo.items||[]).forEach(function(it){
+    var tagCls = it.tagClass ? (' '+it.tagClass) : '';
+    html += '<article class="geo-item"><div class="meta-row">';
+    if (it.tag) html += '<span class="geo-tag'+tagCls+'">'+esc(it.tag)+'</span>';
+    if (it.when) html += '<span class="when">'+esc(it.when)+'</span>';
+    html += '</div><h3>'+esc(it.headline)+'</h3><p>'+esc(it.summary)+'</p>';
+    if (it.url) html += '<a class="more" href="'+esc(it.url)+'" target="_blank" rel="noopener">Đọc nguồn</a>';
+    html += '</article>';
+  });
+  if (!(geo.items||[]).length) html += '<article class="geo-item"><p>Chưa có tin Geo Pulse trong cửa sổ 24h — sẽ cập nhật khi có brief.</p></article>';
+  html += '</section>';
+
+  var cm = d.comment||{};
+  html += '<div class="section-label">Nhận định · đánh giá · dự đoán</div>';
+  html += '<section class="analysis"><div class="badge">'+esc(cm.badge||'Macro Eco · Bình luận')+'</div><h2>'+esc(cm.title||'Nhận định chung tình hình')+'</h2>'+(cm.paragraphs||[]).map(function(p){return '<p>'+p+'</p>';}).join('')+'</section>';
+
+  html += '<div class="section-label">Bảng chỉ số chi tiết</div>';
   html += '<section class="grid">'+(d.cards||[]).map(function(c){
     var tag = '<span class="tag'+(c.tagClass?(' '+c.tagClass):'')+'">'+esc(c.tag)+'</span>';
     var level = '<div class="level">'+esc(c.level)+(c.levelSmall?'<small>'+esc(c.levelSmall)+'</small>':'')+'</div>';
@@ -122,8 +166,6 @@ h1{font-size:1.48rem;letter-spacing:-.03em;color:#262626;font-weight:800}.brand 
     }).join('');
     return '<article class="card"><div class="card-top"><div class="cat"><div class="icon">'+esc(c.icon)+'</div><div><h3>'+esc(c.title)+'</h3><span>'+esc(c.subtitle)+'</span></div></div>'+tag+'</div>'+level+'<div class="table">'+thead+rows+'</div><div class="note">'+esc(c.note)+'</div><div class="news"><div class="news-label">Điểm nhấn</div><p>'+esc(c.news)+'</p></div></article>';
   }).join('')+'</section>';
-  var cm = d.comment||{};
-  html += '<section class="comment"><div class="badge">'+esc(cm.badge||'Macro Eco · Bình luận')+'</div><h2>'+esc(cm.title||'Nhận định chung tình hình')+'</h2>'+(cm.paragraphs||[]).map(function(p){return '<p>'+p+'</p>';}).join('')+'</section>';
   html += '<section class="spotlight"><div class="panel"><h2>Bottom line hôm nay</h2><ul>'+(d.bottomLine||[]).map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul></div><div class="side"><h2>Lịch catalyst</h2><div class="cal">'+(d.catalysts||[]).map(function(x){return '<div class="cal-item"><span class="when">'+esc(x.when)+'</span><span class="what">'+esc(x.what)+'</span></div>';}).join('')+'</div></div></section>';
   html += '<div class="legend"><b>Quy ước:</b><span><i style="background:#087443"></i> tăng</span><span><i style="background:#c73545"></i> giảm</span><span><i style="background:#a7b0bd"></i> chưa có dữ liệu = —</span><span>Fed: vs kỳ gần nhất · Inflation: MoM/YoY · còn lại: % ngày/% tuần</span></div>';
   var f = d.footer||{};
