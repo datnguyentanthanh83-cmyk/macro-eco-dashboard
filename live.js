@@ -1,4 +1,4 @@
-/* Load same-origin quotes.json (filled from Investing.com server-side). Not investment advice. */
+/* Load same-origin quotes.json (Investing.com server-side). Not investment advice. */
 (function () {
   var INTERVAL_MS = 20000;
   var QUOTES_URL = './quotes.json';
@@ -11,11 +11,11 @@
     return Number(n).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
   }
   function fmtPct(n) {
-    if (n == null || isNaN(n)) return '';
+    if (n == null || isNaN(n)) return '—';
     return (n >= 0 ? '+' : '') + Number(n).toFixed(2) + '%';
   }
   function fmtBp(n) {
-    if (n == null || isNaN(n)) return '';
+    if (n == null || isNaN(n)) return '—';
     var bp = Math.round(Number(n) * 100);
     return (bp >= 0 ? '+' : '') + bp + 'bp';
   }
@@ -23,8 +23,12 @@
     if (n == null || isNaN(n) || Math.abs(n) < 0.0001) return 'flat';
     return n > 0 ? 'up' : 'down';
   }
+  function chgHtml(text, cls, closed) {
+    var label = '<b class="' + (cls || 'flat') + '">' + text + '</b>';
+    if (closed) label += ' <span style="color:#7a8699;font-weight:700">· đóng</span>';
+    return label;
+  }
 
-  /* Approx session calendars — closed = keep last quotes.json / snapshot, no urge to refetch beyond poll */
   var SESSIONS = {
     vnindex: { tz: 'Asia/Ho_Chi_Minh', days: [1,2,3,4,5], windows: [[9*60, 11*60+30], [13*60, 15*60]] },
     spx: { tz: 'America/New_York', days: [1,2,3,4,5], windows: [[9*60+30, 16*60]] },
@@ -43,7 +47,7 @@
   }
   function isSessionOpen(key, date) {
     var s = SESSIONS[key];
-    if (!s) return true; /* FX / futures: always show file value on weekdays */
+    if (!s) return true;
     var p = partsInTz(date || new Date(), s.tz);
     if (s.days.indexOf(p.day) < 0) return false;
     for (var i = 0; i < s.windows.length; i++) {
@@ -58,7 +62,7 @@
     el.textContent = text;
     el.className = 'live-status' + (ok ? ' ok' : ' bad');
   }
-  function setBoard(id, priceText, chgHtml, closed) {
+  function setBoard(id, priceText, html, closed) {
     var el = $(id);
     if (!el) return;
     el.classList.toggle('is-closed', !!closed);
@@ -66,7 +70,7 @@
     var v = el.querySelector('.live-value');
     var c = el.querySelector('.live-chg');
     if (v && priceText != null) v.textContent = priceText;
-    if (c && chgHtml != null) c.innerHTML = chgHtml;
+    if (c && html != null) c.innerHTML = html;
   }
   function setLevel(key, text, small) {
     $all('[data-live-level="' + key + '"]').forEach(function (el) {
@@ -102,29 +106,30 @@
 
     function apply(key, fmtPrice, dayFmt) {
       var item = q[key];
-      if (!item || item.price == null) return;
+      if (!item || item.price == null) return null;
       var closed = SESSIONS[key] ? !isSessionOpen(key, now) : false;
       var priceText = fmtPrice(item.price);
       var dayText = dayFmt ? dayFmt(item) : fmtPct(item.chgPct);
-      var dayCls = clsPct(item.chgPct != null ? item.chgPct : item.chgAbs);
+      var ref = item.chgPct != null ? item.chgPct : item.chgAbs;
+      var dayCls = clsPct(ref);
       setRow(key, priceText, dayText, dayCls, closed);
       return { priceText: priceText, dayText: dayText, dayCls: dayCls, closed: closed, item: item };
     }
 
     var dxy = apply('dxy', function (p) { return fmtNum(p, 2); });
     if (dxy) {
-      setBoard('#live-dxy', dxy.priceText, dxy.closed ? 'đóng cửa · Investing' : '<b class="' + dxy.dayCls + '">' + dxy.dayText + '</b>', dxy.closed);
+      setBoard('#live-dxy', dxy.priceText, chgHtml(dxy.dayText, dxy.dayCls, dxy.closed), dxy.closed);
       setLevel('dxy', dxy.priceText);
     }
 
     var u10 = apply('ust10y', function (p) { return fmtNum(p, 3) + '%'; }, function (it) { return fmtBp(it.chgAbs); });
     if (u10) {
-      setBoard('#live-ust10y', u10.priceText, u10.closed ? 'đóng cửa · Investing' : '<b class="' + u10.dayCls + '">' + u10.dayText + '</b>', u10.closed);
-      setLevel('ust10y', fmtNum(u10.item.price, 2) + '%', '10Y Investing');
+      setBoard('#live-ust10y', u10.priceText, chgHtml(u10.dayText, u10.dayCls, u10.closed), u10.closed);
+      setLevel('ust10y', fmtNum(u10.item.price, 2) + '%', '10Y vs prior');
     }
     var u2 = apply('ust2y', function (p) { return fmtNum(p, 3) + '%'; }, function (it) { return fmtBp(it.chgAbs); });
     if (u2) {
-      setBoard('#live-ust2y', u2.priceText, u2.closed ? 'đóng cửa · Investing' : '<b class="' + u2.dayCls + '">' + u2.dayText + '</b>', u2.closed);
+      setBoard('#live-ust2y', u2.priceText, chgHtml(u2.dayText, u2.dayCls, u2.closed), u2.closed);
     }
     if (q.ust2s10s && q.ust2s10s.price != null) {
       var sp = q.ust2s10s.price;
@@ -133,39 +138,39 @@
 
     var vn = apply('vnindex', function (p) { return fmtNum(p, 2); });
     if (vn) {
-      setBoard('#live-vn', vn.priceText, vn.closed ? 'đóng cửa · snapshot' : '<b class="' + vn.dayCls + '">' + vn.dayText + '</b>', vn.closed);
+      setBoard('#live-vn', vn.priceText, chgHtml(vn.dayText, vn.dayCls, vn.closed), vn.closed);
       setLevel('vnindex', vn.priceText);
     }
 
     [['wti', 2, '$'], ['brent', 2, '$'], ['gold', 0, '$']].forEach(function (x) {
       var r = apply(x[0], function (p) { return x[2] + fmtNum(p, x[1]); });
-      if (r && x[0] === 'wti') setLevel('wti', r.priceText, 'WTI Investing');
+      if (r && x[0] === 'wti') setLevel('wti', r.priceText, 'WTI vs prior');
     });
     [['spx', 0], ['ndx', 0], ['dji', 0], ['rut', 0]].forEach(function (x) {
       var r = apply(x[0], function (p) { return fmtNum(p, x[1]); });
-      if (r && x[0] === 'spx') setLevel('spx', r.priceText, 'S&P Investing');
+      if (r && x[0] === 'spx') setLevel('spx', r.priceText, 'S&P vs prior');
     });
     apply('gbpusd', function (p) { return fmtNum(p, 4); });
     apply('audusd', function (p) { return fmtNum(p, 4); });
 
-    if (q.eurusd) {
-      var e = apply('eurusd', function (p) { return fmtNum(p, 4); });
-      if (e) {
-        setBoard('#live-eurusd', e.priceText, 'Investing', false);
-        setLevel('eurusd', e.priceText, 'EUR/USD');
-      }
+    var e = apply('eurusd', function (p) { return fmtNum(p, 4); });
+    if (e) {
+      setBoard('#live-eurusd', e.priceText, chgHtml(e.dayText, e.dayCls, false), false);
+      setLevel('eurusd', e.priceText, 'EUR/USD');
     }
-    if (q.usdjpy) {
-      var j = apply('usdjpy', function (p) { return fmtNum(p, 2); });
-      if (j) setBoard('#live-usdjpy', j.priceText, 'Investing', false);
-    }
-    if (q.usdvnd) {
-      var v = apply('usdvnd', function (p) { return fmtNum(p, 0); });
-      if (v) setBoard('#live-usdvnd', v.priceText, 'FX mid', false);
+    var j = apply('usdjpy', function (p) { return fmtNum(p, 2); });
+    if (j) setBoard('#live-usdjpy', j.priceText, chgHtml(j.dayText, j.dayCls, false), false);
+
+    var v = apply('usdvnd', function (p) { return fmtNum(p, 0); });
+    if (v) {
+      var vHtml = (v.item.chgPct == null)
+        ? '<span style="color:#7a8699;font-weight:700">vs prior: —</span>'
+        : chgHtml(v.dayText, v.dayCls, false);
+      setBoard('#live-usdvnd', v.priceText, vHtml, false);
     }
 
     var head = $('#live-board .live-head h2');
-    if (head) head.textContent = 'Near real-time · Investing.com (delayed)';
+    if (head) head.textContent = 'Near real-time · Investing.com · vs prior close';
   }
 
   var refreshing = false;
@@ -180,9 +185,9 @@
       var payload = await r.json();
       applyQuotes(payload);
       var ms = Date.now() - t0;
-      setStatus('Investing · ' + (payload.asOf || '') + ' · load ' + ms + 'ms · poll 20s', true);
+      setStatus('Investing · vs prior close · ' + (payload.asOf || '') + ' · ' + ms + 'ms', true);
     } catch (e) {
-      setStatus('Chưa có quotes.json — giữ snapshot sáng. (' + (e && e.message) + ')', false);
+      setStatus('Chưa có quotes.json — giữ snapshot. (' + (e && e.message) + ')', false);
       console.warn(e);
     } finally {
       refreshing = false;
