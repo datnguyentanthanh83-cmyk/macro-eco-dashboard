@@ -1,13 +1,13 @@
 {
-  "asOf": "2026-09-25 05:44:31 ICT",
-  "asOfUnix": 1790289871,
+  "asOf": "2026-09-25 07:54:05 ICT",
+  "asOfUnix": 1790297645,
   "provider": "Investing.com (vs prior close) + er-api FX",
   "quotes": {
     "usdvnd": {
-      "price": 25961.694126,
+      "price": 25950.539882,
       "prevClose": 25994.936845,
-      "chgPct": -0.12788151476657944,
-      "chgAbs": -33.24271900000167,
+      "chgPct": -0.1707908092438346,
+      "chgAbs": -44.39696299999923,
       "source": "er-api"
     }
   },
