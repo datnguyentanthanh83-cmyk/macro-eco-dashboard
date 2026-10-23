@@ -1,6 +1,6 @@
 {
-  "asOf": "2026-10-23 08:57:43 ICT",
-  "asOfUnix": 1792720663,
+  "asOf": "2026-10-23 14:08:23 ICT",
+  "asOfUnix": 1792739303,
   "provider": "Investing.com (vs prior close) + er-api FX",
   "quotes": {
     "usdvnd": {
